@@ -58,15 +58,18 @@ struct T
 {
     T(float v, const char* n) : value(v),  name(n) {} //1
     float value;//2
-    std::string name;//3 -> (A) Why there's char* in the T constructor and std::string here? I thought char is just for one letter?
+    std::string name;//3
 };
 
 struct F                                //4
 {
-    T* compare(T* a, T* b) //5 -> (B) So here struct F is used strictly as a class for comparirng 2 values of class T, right? Thanks to the use of pointers it won't copy any values from T, it'll just compare them without the need of additional memory, except for the addresses? Also I don't fully understand why the function type also needs to be a pointer.
+    T* compare(T* a, T* b) //5
     {
-        if( a->value < b->value ) return a;
-        if( a->value > b->value ) return b;
+        if (a != nullptr && b != nullptr)
+        {
+            if( a->value < b->value ) return a;
+            if( a->value > b->value ) return b;
+        }
         return nullptr;
     }
 };
@@ -74,17 +77,25 @@ struct F                                //4
 struct U
 {
     float valueA { 0.f }, valueB { 0.f };
-    float updateValuesU(float* newValue)      //12 (C) what type should I put here? Float? But why it's a pointer?
+    float updateValuesU(float* newValue)      //12
     {
-        std::cout << "U's valueA value: " << valueA << std::endl;
-        valueA = *newValue;
-        std::cout << "U's valueA updated value: " << valueA << std::endl;
-        while( std::abs(valueB - valueA) > 0.001f )
+        if (newValue != nullptr)
         {
-            valueB += 0.5f;
+            std::cout << "U's valueA value: " << valueA << std::endl;
+            valueA = *newValue;
+            std::cout << "U's valueA updated value: " << valueA << std::endl;
+            while( std::abs(valueB - valueA) > 0.001f )
+            {
+                valueB += 0.5f;
+            }
+            std::cout << "U's memberB updated value: " << valueB << std::endl;
+            return valueB * valueA;
         }
-        std::cout << "U's memberB updated value: " << valueB << std::endl;
-        return valueB * valueA;
+        else
+        {
+            std::cout << "newValue is a nullptr.\n";
+            return -1.f;
+        }
     }
 };
 
@@ -92,15 +103,23 @@ struct L
 {
     static float updateValuesL(U* that, float* newValue )        //10
     {
-        std::cout << "U's valueA value: " << that->valueA << std::endl;
-        that->valueA = *newValue;
-        std::cout << "U's valueA updated value: " << that->valueA << std::endl;
-        while( std::abs(that->valueB - that->valueA) > 0.001f )
+        if (that != nullptr && newValue != nullptr)
         {
-            that->valueB += 0.5f;
+            std::cout << "U's valueA value: " << that->valueA << std::endl;
+            that->valueA = *newValue;
+            std::cout << "U's valueA updated value: " << that->valueA << std::endl;
+            while( std::abs(that->valueB - that->valueA) > 0.001f )
+            {
+                that->valueB += 0.5f;
+            }
+            std::cout << "U's memberB updated value: " << that->valueB << std::endl;
+            return that->valueB * that->valueA;
         }
-        std::cout << "U's memberB updated value: " << that->valueB << std::endl;
-        return that->valueB * that->valueA;
+        else
+        {
+            std::cout << "that or newValue is / are a nullptr.\n";
+            return -1.f;
+        }
     }
 };
         
@@ -126,7 +145,9 @@ int main()
     F f;                                            //7
     auto* smaller = f.compare( &bucketA, &bucketB );                              //8
     if (smaller != nullptr)
-		std::cout << "the smaller one is << " << smaller->name << std::endl; //9
+	    std::cout << "the smaller one is << " << smaller->name << std::endl; //9
+    else
+        std::cout << "smaller is a nullptr because a or / and b from compare function is / are a nullptr.\n";
     
     U containerA;
     float newValue = 5.f;
