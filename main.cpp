@@ -74,24 +74,29 @@ struct F                                //4
 struct U
 {
     float valueA { 0.f }, valueB { 0.f };
-    float updateValuesU(* newValue)      //12 (C) what type should I use here? Float? But why it's a pointer?
+    float updateValuesU(float* newValue)      //12 (C) what type should I put here? Float? But why it's a pointer?
     {
-        
+        std::cout << "U's valueA value: " << valueA << std::endl;
+        valueA = *newValue;
+        std::cout << "U's valueA updated value: " << valueA << std::endl;
+        while( std::abs(valueB - valueA) > 0.001f )
+        {
+            valueB += 0.5f;
+        }
+        std::cout << "U's memberB updated value: " << valueB << std::endl;
+        return valueB * valueA;
     }
 };
 
 struct L
 {
-    static float updateValuesL(U* that, U* newValue )        //10
+    static float updateValuesL(U* that, float* newValue )        //10
     {
         std::cout << "U's valueA value: " << that->valueA << std::endl;
-        that->valueA = newValue->valueB;
+        that->valueA = *newValue;
         std::cout << "U's valueA updated value: " << that->valueA << std::endl;
         while( std::abs(that->valueB - that->valueA) > 0.001f )
         {
-            /*
-             write something that makes the distance between that-><#name2#> and that->name1 get smaller
-             */
             that->valueB += 0.5f;
         }
         std::cout << "U's memberB updated value: " << that->valueB << std::endl;
@@ -125,7 +130,7 @@ int main()
     
     U containerA;
     float newValue = 5.f;
-    std::cout << "[static func] containerA's multiplied values: " << L::updateValuesL( , ) << std::endl;                  //11
+    std::cout << "[static func] containerA's multiplied values: " << L::updateValuesL( &containerA, &newValue ) << std::endl;                  //11
     
     U containerB;
     std::cout << "[member func] containerB's multiplied values: " << containerB.updateValuesU( &newValue ) << std::endl;
