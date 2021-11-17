@@ -56,46 +56,70 @@ Purpose:  This project will show you the difference between member functions and
 #include <string>
 struct T
 {
-    T(<#type name#> v, const char* <#variable name#>)   //1
-    //2
-    //3
+    T(float v, const char* n) : value(v),  name(n) {} //1
+    float value;//2
+    std::string name;//3
 };
 
-struct <#structName1#>                                //4
+struct F                                //4
 {
-    <#type name#> compare(<#type name#> a, <#type name#> b) //5
+    T* compare(T* a, T* b) //5
     {
-        if( a->value < b->value ) return a;
-        if( a->value > b->value ) return b;
+        if (a != nullptr && b != nullptr)
+        {
+            if( a->value < b->value ) return a;
+            if( a->value > b->value ) return b;
+        }
         return nullptr;
     }
 };
 
 struct U
 {
-    float <#name1#> { 0 }, <#name2#> { 0 };
-    <#returnType#> <#memberFunction#>(<#type name#>* <#updatedValue#>)      //12
+    float valueA { 0.f }, valueB { 0.f };
+    float updateValuesU(float* newValue)      //12
     {
-        
+        if (newValue != nullptr)
+        {
+            std::cout << "U's valueA value: " << valueA << std::endl;
+            valueA = *newValue;
+            std::cout << "U's valueA updated value: " << valueA << std::endl;
+            while( std::abs(valueB - valueA) > 0.001f )
+            {
+                valueB += 0.5f;
+            }
+            std::cout << "U's memberB updated value: " << valueB << std::endl;
+            return valueB * valueA;
+        }
+        else
+        {
+            std::cout << "newValue is a nullptr.\n";
+            return -1.f;
+        }
     }
 };
 
-struct <#structname2#>
+struct L
 {
-    static <#returntype#> <#staticFunctionA#>(U* that, <#type name#>* <#updatedValue#> )        //10
+    static float updateValuesL(U* that, float* newValue )        //10
     {
-        std::cout << "U's <#name1#> value: " << that-><#name1#> << std::endl;
-        that-><#name1#> = <#updatedValue#>;
-        std::cout << "U's <#name1#> updated value: " << that-><#name1#> << std::endl;
-        while( std::abs(that-><#name2#> - that-><#name1#>) > 0.001f )
+        if (that != nullptr && newValue != nullptr)
         {
-            /*
-             write something that makes the distance between that-><#name2#> and that-><#name1#> get smaller
-             */
-            that-><#name2#> += ;
+            std::cout << "U's valueA value: " << that->valueA << std::endl;
+            that->valueA = *newValue;
+            std::cout << "U's valueA updated value: " << that->valueA << std::endl;
+            while( std::abs(that->valueB - that->valueA) > 0.001f )
+            {
+                that->valueB += 0.5f;
+            }
+            std::cout << "U's memberB updated value: " << that->valueB << std::endl;
+            return that->valueB * that->valueA;
         }
-        std::cout << "U's <#name2#> updated value: " << that-><#name2#> << std::endl;
-        return that-><#name2#> * that-><#name1#>;
+        else
+        {
+            std::cout << "that or newValue is / are a nullptr.\n";
+            return -1.f;
+        }
     }
 };
         
@@ -104,7 +128,7 @@ struct <#structname2#>
 
  Commit your changes by clicking on the Source Control panel on the left, entering a message, and click [Commit and push].
  
- If you didn't already: 
+ If you didn't already:
     Make a pull request after you make your first commit
     pin the pull request link and this repl.it link to our DM thread in a single message.
 
@@ -115,17 +139,20 @@ struct <#structname2#>
 
 int main()
 {
-    T <#name1#>( , );                                             //6
-    T <#name2#>( , );                                             //6
+    T bucketA( 5, "Bucket A" );                                             //6
+    T bucketB( 7, "Bucket B" );                                             //6
     
-    <#structName1#> f;                                            //7
-    auto* smaller = f.compare( , );                              //8
-    std::cout << "the smaller one is << " << smaller->name << std::endl; //9
+    F f;                                            //7
+    auto* smaller = f.compare( &bucketA, &bucketB );                              //8
+    if (smaller != nullptr)
+	    std::cout << "the smaller one is << " << smaller->name << std::endl; //9
+    else
+        std::cout << "smaller is a nullptr because a or / and b from compare function is / are a nullptr.\n";
     
-    U <#name3#>;
-    float updatedValue = 5.f;
-    std::cout << "[static func] <#name3#>'s multiplied values: " << <#structname2#>::<#staticFunctionA#>( , ) << std::endl;                  //11
+    U containerA;
+    float newValue = 5.f;
+    std::cout << "[static func] containerA's multiplied values: " << L::updateValuesL( &containerA, &newValue ) << std::endl;                  //11
     
-    U <#name4#>;
-    std::cout << "[member func] <#name4#>'s multiplied values: " << <#name4#>.<#memberFunction#>( &updatedValue ) << std::endl;
+    U containerB;
+    std::cout << "[member func] containerB's multiplied values: " << containerB.updateValuesU( &newValue ) << std::endl;
 }
