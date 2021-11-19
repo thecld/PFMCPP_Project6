@@ -34,11 +34,8 @@ struct F                                //4
 {
     T* compare(T* a, T* b) //5
     {
-        if (a != nullptr && b != nullptr)
-        {
-            if( a->value < b->value ) return a;
-            if( a->value > b->value ) return b;
-        }
+        if( a->value < b->value ) return a;
+        if( a->value > b->value ) return b;
         return nullptr;
     }
 };
@@ -46,49 +43,33 @@ struct F                                //4
 struct U
 {
     float valueA { 0.f }, valueB { 0.f };
-    float updateValuesU(float* newValue)      //12
+    float updateValuesU(float& newValue)      //12
     {
-        if (newValue != nullptr)
+        std::cout << "U's valueA value: " << valueA << std::endl;
+        valueA = newValue;
+        std::cout << "U's valueA updated value: " << valueA << std::endl;
+        while( std::abs(valueB - valueA) > 0.001f )
         {
-            std::cout << "U's valueA value: " << valueA << std::endl;
-            valueA = *newValue;
-            std::cout << "U's valueA updated value: " << valueA << std::endl;
-            while( std::abs(valueB - valueA) > 0.001f )
-            {
-                valueB += 0.5f;
-            }
-            std::cout << "U's memberB updated value: " << valueB << std::endl;
-            return valueB * valueA;
+            valueB += 0.5f;
         }
-        else
-        {
-            std::cout << "newValue is a nullptr.\n";
-            return -1.f;
-        }
+        std::cout << "U's memberB updated value: " << valueB << std::endl;
+        return valueB * valueA;
     }
 };
 
 struct L
 {
-    static float updateValuesL(U* that, float* newValue )        //10
+    static float updateValuesL(U& that, float& newValue )        //10
     {
-        if (that != nullptr && newValue != nullptr)
+        std::cout << "U's valueA value: " << that.valueA << std::endl;
+        that.valueA = newValue;
+        std::cout << "U's valueA updated value: " << that.valueA << std::endl;
+        while( std::abs(that.valueB - that.valueA) > 0.001f )
         {
-            std::cout << "U's valueA value: " << that->valueA << std::endl;
-            that->valueA = *newValue;
-            std::cout << "U's valueA updated value: " << that->valueA << std::endl;
-            while( std::abs(that->valueB - that->valueA) > 0.001f )
-            {
-                that->valueB += 0.5f;
-            }
-            std::cout << "U's memberB updated value: " << that->valueB << std::endl;
-            return that->valueB * that->valueA;
+            that.valueB += 0.5f;
         }
-        else
-        {
-            std::cout << "that or newValue is / are a nullptr.\n";
-            return -1.f;
-        }
+        std::cout << "U's memberB updated value: " << that.valueB << std::endl;
+        return that.valueB * that.valueA;
     }
 };
         
@@ -120,8 +101,8 @@ int main()
     
     U containerA;
     float newValue = 5.f;
-    std::cout << "[static func] containerA's multiplied values: " << L::updateValuesL( &containerA, &newValue ) << std::endl;                  //11
+    std::cout << "[static func] containerA's multiplied values: " << L::updateValuesL( containerA, newValue ) << std::endl;                  //11
     
     U containerB;
-    std::cout << "[member func] containerB's multiplied values: " << containerB.updateValuesU( &newValue ) << std::endl;
+    std::cout << "[member func] containerB's multiplied values: " << containerB.updateValuesU( newValue ) << std::endl;
 }
