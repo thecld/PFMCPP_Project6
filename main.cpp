@@ -32,10 +32,11 @@ struct T
 
 struct F                                //4
 {
-    T compare(T& a, T& b) //5
+    T* compare(T& a, T& b) //5
     {
-        if( a.value < b.value ) return a;
-        return b;
+        if( a.value < b.value ) return &a;
+        if( a.value > b.value ) return &b;
+        return nullptr;
     }
 };
 
@@ -92,8 +93,11 @@ int main()
     T bucketB( 7, "Bucket B" );                                             //6
     
     F f;                                            //7
-    auto smaller = f.compare( bucketA, bucketB );                              //8
-	std::cout << "the smaller one is << " << smaller.name << std::endl; //9
+    auto* smaller = f.compare( bucketA, bucketB );                              //8
+    if (smaller != nullptr)
+	    std::cout << "the smaller one is << " << smaller->name << std::endl; //9
+    else
+        std::cout << "smaller is a nullptr because a or / and b from compare function is / are a nullptr.\n";
     
     U containerA;
     float newValue = 5.f;
